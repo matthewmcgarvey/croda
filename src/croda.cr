@@ -1,4 +1,6 @@
-# TODO: Write documentation for `Croda`
+require "http"
+require "./croda/*"
+
 module Croda
   VERSION = "0.1.0"
 
