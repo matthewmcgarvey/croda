@@ -14,7 +14,7 @@ class MyPlugin
   end
 end
 
-class App < Croda::App
+class App < Croda
   plugin MyPlugin
 
   route do |r|
