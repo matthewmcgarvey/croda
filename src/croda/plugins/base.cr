@@ -73,33 +73,56 @@ class Croda
       end
 
       module RequestMethods
-        struct Term
-        end
-
-        TERM = Term.new
-
         def initialize(@request : HTTP::Request, @app : ::Croda)
           @remaining_path = @request.path
         end
 
-        def on(*args, &block)
-          if args.empty?
-            always(&block)
-          else
-            if_match(args, &block)
-          end
+        def on(&block)
+          always(&block)
         end
 
-        def is(*args, &block)
-          if_match(args + {TERM}, &block)
+        def on(arg : String, &block)
+          if_match(arg, &block)
         end
 
-        def get(*args, &block)
-          verb(args, &block) if is_get?
+        def on(arg : T.class, &block : T -> _) forall T
+          if_match(arg, &block)
         end
 
-        def post(*args, &block)
-          verb(args, &block) if is_post?
+        def is(&block)
+          always(&block) if empty_path?
+        end
+
+        def is(arg : String, &block)
+          if_match(arg, terminal: true, &block)
+        end
+
+        def is(arg : T.class, &block : T -> _) forall T
+          if_match(arg, terminal: true, &block)
+        end
+
+        def get(&block)
+          always(&block) if is_get?
+        end
+
+        def get(arg : String, &block)
+          if_match(arg, terminal: true, &block) if is_get?
+        end
+
+        def get(arg : T.class, &block : T -> _) forall T
+          if_match(arg, terminal: true, &block) if is_get?
+        end
+
+        def post(&block)
+          always(&block) if is_post?
+        end
+
+        def post(arg : String, &block)
+          if_match(arg, terminal: true, &block) if is_post?
+        end
+
+        def post(arg : T.class, &block : T -> _) forall T
+          if_match(arg, terminal: true, &block) if is_post?
         end
 
         def always
@@ -107,32 +130,32 @@ class Croda
           throw :halt
         end
 
-        # args is a Tuple
-        def if_match(args, &block)
+        def if_match(arg : String, terminal = false)
           path = @remaining_path
 
-          if match_all(args)
-            always(&block)
+          if match(arg) && (!terminal || empty_path?)
+            with @app yield
+            throw :halt
           else
             @remaining_path = path
             false
           end
         end
 
-        private def verb(args, &block)
-          if args.empty?
-            always(&block)
+        def if_match(arg : T.class, terminal = false) forall T
+          path = @remaining_path
+
+          if (result = match(arg)) && (!terminal || empty_path?)
+            with @app yield result
+            throw :halt
           else
-            if_match(args + {TERM}, &block)
+            @remaining_path = path
+            false
           end
         end
 
         private def empty_path? : Bool
           @remaining_path.empty?
-        end
-
-        private def match_all(args)
-          args.all? { |arg| match(arg) }
         end
 
         private def match(arg : String) : Bool
@@ -172,8 +195,26 @@ class Croda
           end
         end
 
-        private def match(arg : Term) : Bool
-          empty_path?
+        private def match(arg : Int32.class) : Int32?
+          matchdata = @remaining_path.match(/\A\/(\d+)(?=\/|\z)/)
+          return if matchdata.nil?
+
+          @remaining_path = matchdata.post_match
+          path_var = matchdata.captures.first.not_nil!
+          path_var.to_i
+        end
+
+        private def match(arg : String.class) : String?
+          rp = @remaining_path
+          return unless rp.byte_at?(0) == 47
+
+          if last = rp.index('/', 1)
+            @remaining_path = rp[last, rp.size]
+            rp[1, last - 1]
+          elsif rp.size > 1
+            @remaining_path = ""
+            rp[1, rp.size]
+          end
         end
 
         private def is_get?
