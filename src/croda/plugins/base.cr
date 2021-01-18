@@ -82,32 +82,24 @@ class Croda
           @remaining_path = @request.path
         end
 
-        def on(&block)
-          always(&block)
-        end
-
         def on(*args, &block)
-          if_match(args, &block)
-        end
-
-        def is(&block)
-          if_match({TERM}, &block)
+          if args.empty?
+            always(&block)
+          else
+            if_match(args, &block)
+          end
         end
 
         def is(*args, &block)
           if_match(args + {TERM}, &block)
         end
 
-        def get(&block)
-          always(&block) if is_get?
-        end
-
         def get(*args, &block)
-          if_match(args, &block) if is_get?
+          verb(args, &block) if is_get?
         end
 
-        def post(&block)
-          always(&block) if is_post?
+        def post(*args, &block)
+          verb(args, &block) if is_post?
         end
 
         def always
@@ -124,6 +116,14 @@ class Croda
           else
             @remaining_path = path
             false
+          end
+        end
+
+        private def verb(args, &block)
+          if args.empty?
+            always(&block)
+          else
+            if_match(args + {TERM}, &block)
           end
         end
 
