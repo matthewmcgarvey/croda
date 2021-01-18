@@ -74,14 +74,23 @@ class Croda
 
       module RequestMethods
         def initialize(@request : HTTP::Request, @app : ::Croda)
+          @remaining_path = @request.path
+        end
+
+        def on(&block)
+          always(&block)
+        end
+
+        def on(*args, &block)
+          if_match(args, &block)
         end
 
         def get(&block)
           always(&block) if is_get?
         end
 
-        def get(path, &block)
-          always(&block) if is_get? && path_matches?(path)
+        def get(*args, &block)
+          if_match(args, &block) if is_get?
         end
 
         def post(&block)
@@ -91,6 +100,56 @@ class Croda
         def always
           with @app yield
           throw :halt
+        end
+
+        # args is a Tuple
+        def if_match(args, &block)
+          path = @remaining_path
+
+          if match_all(args)
+            always(&block)
+          else
+            @remaining_path = path
+            false
+          end
+        end
+
+        private def match_all(args)
+          args.all? { |arg| match_string(arg) }
+        end
+
+        private def match_string(str : String)
+          rp = @remaining_path
+          length = str.size
+
+          match = case rp.rindex(str, length)
+                  when nil
+                    # segment does not match, most common case
+                    return
+                  when 1
+                    # segment matches, check first character is /
+                    rp.byte_at?(0) == 47
+                  else # must be 0
+                    # segment matches at first character, only a match if
+                    # empty string given and first character is /
+                    length == 0 && rp.byte_at?(0) == 47
+                  end
+
+          if match
+            length += 1
+            case rp.byte_at?(length)
+            when 47
+              # next character is /, update remaining path to rest of string
+              @remaining_path = rp[length, 100000000]
+            when nil
+              # end of string, so remaining path is empty
+              @remaining_path = ""
+              # else
+              # Any other value means this was partial segment match,
+              # so we return nil in that case without updating the
+              # remaining_path.  No need for explicit else clause.
+            end
+          end
         end
 
         private def is_get?
