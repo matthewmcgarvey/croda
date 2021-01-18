@@ -94,6 +94,10 @@ class Croda
           if_match({TERM}, &block)
         end
 
+        def is(*args, &block)
+          if_match(args + {TERM}, &block)
+        end
+
         def get(&block)
           always(&block) if is_get?
         end
