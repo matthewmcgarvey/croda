@@ -73,6 +73,11 @@ class Croda
       end
 
       module RequestMethods
+        struct Term
+        end
+
+        TERM = Term.new
+
         def initialize(@request : HTTP::Request, @app : ::Croda)
           @remaining_path = @request.path
         end
@@ -83,6 +88,10 @@ class Croda
 
         def on(*args, &block)
           if_match(args, &block)
+        end
+
+        def is(&block)
+          if_match({TERM}, &block)
         end
 
         def get(&block)
@@ -114,18 +123,22 @@ class Croda
           end
         end
 
-        private def match_all(args)
-          args.all? { |arg| match_string(arg) }
+        private def empty_path? : Bool
+          @remaining_path.empty?
         end
 
-        private def match_string(str : String)
-          rp = @remaining_path
-          length = str.size
+        private def match_all(args)
+          args.all? { |arg| match(arg) }
+        end
 
-          match = case rp.rindex(str, length)
+        private def match(arg : String) : Bool
+          rp = @remaining_path
+          length = arg.size
+
+          match = case rp.rindex(arg, length)
                   when nil
                     # segment does not match, most common case
-                    return
+                    return false
                   when 1
                     # segment matches, check first character is /
                     rp.byte_at?(0) == 47
@@ -135,21 +148,28 @@ class Croda
                     length == 0 && rp.byte_at?(0) == 47
                   end
 
-          if match
-            length += 1
-            case rp.byte_at?(length)
-            when 47
-              # next character is /, update remaining path to rest of string
-              @remaining_path = rp[length, 100000000]
-            when nil
-              # end of string, so remaining path is empty
-              @remaining_path = ""
-              # else
-              # Any other value means this was partial segment match,
-              # so we return nil in that case without updating the
-              # remaining_path.  No need for explicit else clause.
-            end
+          return false unless match
+
+          length += 1
+          case rp.byte_at?(length)
+          when 47
+            # next character is /, update remaining path to rest of string
+            @remaining_path = rp[length, 100000000]
+            true
+          when nil
+            # end of string, so remaining path is empty
+            @remaining_path = ""
+            true
+          else
+            # Any other value means this was partial segment match,
+            # so we return false in that case without updating the
+            # remaining_path.
+            false
           end
+        end
+
+        private def match(arg : Term) : Bool
+          empty_path?
         end
 
         private def is_get?
