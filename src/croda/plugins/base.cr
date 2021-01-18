@@ -76,32 +76,28 @@ class Croda
         def initialize(@request : HTTP::Request, @app : ::Croda)
         end
 
-        def get
-          if get?
-            with @app yield
-            throw :halt
-          end
+        def get(&block)
+          always(&block) if is_get?
         end
 
-        def get(path)
-          if get? && path_matches?(path)
-            with @app yield
-            throw :halt
-          end
+        def get(path, &block)
+          always(&block) if is_get? && path_matches?(path)
         end
 
-        def post
-          if post?
-            with @app yield
-            throw :halt
-          end
+        def post(&block)
+          always(&block) if is_post?
         end
 
-        private def get?
+        def always
+          with @app yield
+          throw :halt
+        end
+
+        private def is_get?
           request_method == "GET"
         end
 
-        private def post?
+        private def is_post?
           request_method == "POST"
         end
 
