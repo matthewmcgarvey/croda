@@ -1,4 +1,4 @@
-class Croda
+abstract class Croda
   class CrodaResponse
   end
 end

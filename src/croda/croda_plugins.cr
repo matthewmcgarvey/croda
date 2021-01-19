@@ -1,4 +1,4 @@
-class Croda
+abstract class Croda
   module CrodaPlugins
   end
 end

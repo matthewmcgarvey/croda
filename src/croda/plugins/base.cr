@@ -1,16 +1,6 @@
-class Croda
+abstract class Croda
   module CrodaPlugins
     module Base
-      module ClassMethods
-        macro extended
-          @@route_block : (Croda::CrodaRequest ->)?
-        end
-
-        def route(&block : Croda::CrodaRequest ->)
-          @@route_block = block
-        end
-      end
-
       module InstanceMethods
         macro croda_plugin(instance_methods_class, class_methods_class)
           {% if imc = instance_methods_class.resolve? %}
@@ -56,12 +46,10 @@ class Croda
           response_plugin({{ "#{type}::ResponseMethods".id }}, {{ "#{type}::ResponseClassMethods".id }})
         end
 
-        def call(context)
-          if block = @@route_block
-            execute context, &block
-            return
+        macro route(&block)
+          def call(context)
+            execute(context) {{ block }}
           end
-          call_next(context)
         end
 
         def execute(context)
