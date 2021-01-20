@@ -53,15 +53,21 @@ abstract class Croda
         end
 
         def execute(context)
-          request = Croda::CrodaRequest.new(context.request, self)
+          request = Croda::CrodaRequest.new(context, self)
           catch :halt do
-            with self yield request
+            yield request
           end
         end
       end
 
       module RequestMethods
-        def initialize(@request : HTTP::Request, @app : ::Croda)
+        @request : HTTP::Request
+        @response : HTTP::Server::Response
+        @remaining_path : String
+
+        def initialize(@context : HTTP::Server::Context, @app : ::Croda)
+          @request = @context.request
+          @response = @context.response
           @remaining_path = @request.path
         end
 
@@ -114,7 +120,7 @@ abstract class Croda
         end
 
         def always
-          with @app yield
+          block_result(with @app yield)
           throw :halt
         end
 
@@ -122,7 +128,7 @@ abstract class Croda
           path = @remaining_path
 
           if match(arg) && (!terminal || empty_path?)
-            with @app yield
+            block_result(with @app yield)
             throw :halt
           else
             @remaining_path = path
@@ -134,12 +140,27 @@ abstract class Croda
           path = @remaining_path
 
           if (result = match(arg)) && (!terminal || empty_path?)
-            with @app yield result
+            block_result(with @app yield result)
             throw :halt
           else
             @remaining_path = path
             false
           end
+        end
+
+        def block_result(result)
+          if body = block_result_body(result)
+            @response.headers.add("Content-Type", "text/html")
+            @response.print(body)
+          end
+        end
+
+        def block_result_body(result : String)
+          result
+        end
+
+        def block_result_body(result : Nil)
+          # do nothing
         end
 
         private def empty_path? : Bool
