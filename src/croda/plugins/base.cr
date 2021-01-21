@@ -53,7 +53,8 @@ abstract class Croda
         end
 
         def execute(context)
-          request = Croda::CrodaRequest.new(context, self)
+          response = Croda::CrodaResponse.new(context.response)
+          request = Croda::CrodaRequest.new(context.request, response, self)
           catch :halt do
             yield request
           end
@@ -62,12 +63,10 @@ abstract class Croda
 
       module RequestMethods
         @request : HTTP::Request
-        @response : HTTP::Server::Response
+        @response : Croda::CrodaResponse
         @remaining_path : String
 
-        def initialize(@context : HTTP::Server::Context, @app : ::Croda)
-          @request = @context.request
-          @response = @context.response
+        def initialize(@request : HTTP::Request, @response : Croda::CrodaResponse, @app : ::Croda)
           @remaining_path = @request.path
         end
 
@@ -241,6 +240,13 @@ abstract class Croda
         private def request_method
           @request.method.upcase
         end
+      end
+
+      module ResponseMethods
+        def initialize(@response : HTTP::Server::Response)
+        end
+
+        forward_missing_to @response
       end
     end
   end
