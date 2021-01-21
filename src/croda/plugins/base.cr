@@ -52,13 +52,20 @@ abstract class Croda
           end
         end
 
+        @response : Croda::CrodaResponse?
+
         def execute(context)
-          response = Croda::CrodaResponse.new(context.response)
+          response = @response = Croda::CrodaResponse.new(context.response)
           request = Croda::CrodaRequest.new(context.request, response)
           catch :halt do
             yield request
           end
           response.finish
+          @response = nil
+        end
+
+        def response : Croda::CrodaResponse
+          @response.not_nil!
         end
       end
 
@@ -258,7 +265,7 @@ abstract class Croda
 
       module ResponseMethods
         @body : String?
-        @status : Int32?
+        property status : Int32?
 
         def initialize(@response : HTTP::Server::Response)
         end
@@ -269,15 +276,15 @@ abstract class Croda
 
         def finish
           set_default_headers
-          status = @status
+          stat = self.status
 
           if body = @body
             @response.print(body)
-            status ||= 200
+            stat ||= 200
           else
-            status ||= 404
+            stat ||= 404
           end
-          @response.status = HTTP::Status.new(status)
+          @response.status = HTTP::Status.new(stat)
         end
 
         def set_default_headers
