@@ -58,6 +58,7 @@ abstract class Croda
           catch :halt do
             yield request
           end
+          response.finish
         end
       end
 
@@ -149,7 +150,6 @@ abstract class Croda
 
         def block_result(result)
           if body = block_result_body(result)
-            @response.headers.add("Content-Type", "text/html")
             @response.print(body)
           end
         end
@@ -247,6 +247,22 @@ abstract class Croda
         end
 
         forward_missing_to @response
+
+        def finish
+          set_default_headers
+        end
+
+        def set_default_headers
+          default_headers.each do |k, v|
+            @response.headers[k] ||= v
+          end
+        end
+
+        def default_headers
+          {
+            "Content-Type" => "text/html",
+          }
+        end
       end
     end
   end
