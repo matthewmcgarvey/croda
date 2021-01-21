@@ -95,6 +95,12 @@ abstract class Croda
           if_match(arg, terminal: true, &block)
         end
 
+        def root(&block : -> _) : Nil
+          if remaining_path == "/" && is_get?
+            always(&block)
+          end
+        end
+
         def get(&block : -> _) : Nil
           always(&block) if is_get?
         end
