@@ -65,7 +65,7 @@ abstract class Croda
       module RequestMethods
         @request : HTTP::Request
         @response : Croda::CrodaResponse
-        @remaining_path : String
+        property remaining_path : String
 
         def initialize(@request : HTTP::Request, @response : Croda::CrodaResponse)
           @remaining_path = @request.path
@@ -160,6 +160,10 @@ abstract class Croda
 
         def block_result_body(result : Nil)
           # do nothing
+        end
+
+        def matched_path : String
+          @request.path.rchop(remaining_path)
         end
 
         private def empty_path? : Bool
