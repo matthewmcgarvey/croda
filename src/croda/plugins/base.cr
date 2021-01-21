@@ -71,55 +71,55 @@ abstract class Croda
           @remaining_path = @request.path
         end
 
-        def on(&block : -> _)
+        def on(&block : -> _) : Nil
           always(&block)
         end
 
-        def on(arg : String, &block : -> _)
+        def on(arg : String, &block : -> _) : Nil
           if_match(arg, &block)
         end
 
-        def on(arg : T.class, &block : T -> _) forall T
+        def on(arg : T.class, &block : T -> _) : Nil forall T
           if_match(arg, &block)
         end
 
-        def is(&block : -> _)
+        def is(&block : -> _) : Nil
           always(&block) if empty_path?
         end
 
-        def is(arg : String, &block : -> _)
+        def is(arg : String, &block : -> _) : Nil
           if_match(arg, terminal: true, &block)
         end
 
-        def is(arg : T.class, &block : T -> _) forall T
+        def is(arg : T.class, &block : T -> _) : Nil forall T
           if_match(arg, terminal: true, &block)
         end
 
-        def get(&block : -> _)
+        def get(&block : -> _) : Nil
           always(&block) if is_get?
         end
 
-        def get(arg : String, &block : -> _)
+        def get(arg : String, &block : -> _) : Nil
           if_match(arg, terminal: true, &block) if is_get?
         end
 
-        def get(arg : T.class, &block : T -> _) forall T
+        def get(arg : T.class, &block : T -> _) : Nil forall T
           if_match(arg, terminal: true, &block) if is_get?
         end
 
-        def post(&block : -> _)
+        def post(&block : -> _) : Nil
           always(&block) if is_post?
         end
 
-        def post(arg : String, &block : -> _)
+        def post(arg : String, &block : -> _) : Nil
           if_match(arg, terminal: true, &block) if is_post?
         end
 
-        def post(arg : T.class, &block : T -> _) forall T
+        def post(arg : T.class, &block : T -> _) : Nil forall T
           if_match(arg, terminal: true, &block) if is_post?
         end
 
-        def always
+        def always : Nil
           block_result(yield)
           throw :halt
         end
