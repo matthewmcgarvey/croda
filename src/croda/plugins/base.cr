@@ -71,11 +71,11 @@ abstract class Croda
           @remaining_path = @request.path
         end
 
-        def on(&block)
+        def on(&block : -> _)
           always(&block)
         end
 
-        def on(arg : String, &block)
+        def on(arg : String, &block : -> _)
           if_match(arg, &block)
         end
 
@@ -83,11 +83,11 @@ abstract class Croda
           if_match(arg, &block)
         end
 
-        def is(&block)
+        def is(&block : -> _)
           always(&block) if empty_path?
         end
 
-        def is(arg : String, &block)
+        def is(arg : String, &block : -> _)
           if_match(arg, terminal: true, &block)
         end
 
@@ -95,11 +95,11 @@ abstract class Croda
           if_match(arg, terminal: true, &block)
         end
 
-        def get(&block)
+        def get(&block : -> _)
           always(&block) if is_get?
         end
 
-        def get(arg : String, &block)
+        def get(arg : String, &block : -> _)
           if_match(arg, terminal: true, &block) if is_get?
         end
 
@@ -107,11 +107,11 @@ abstract class Croda
           if_match(arg, terminal: true, &block) if is_get?
         end
 
-        def post(&block)
+        def post(&block : -> _)
           always(&block) if is_post?
         end
 
-        def post(arg : String, &block)
+        def post(arg : String, &block : -> _)
           if_match(arg, terminal: true, &block) if is_post?
         end
 
