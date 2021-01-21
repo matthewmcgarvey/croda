@@ -54,7 +54,7 @@ abstract class Croda
 
         def execute(context)
           response = Croda::CrodaResponse.new(context.response)
-          request = Croda::CrodaRequest.new(context.request, response, self)
+          request = Croda::CrodaRequest.new(context.request, response)
           catch :halt do
             yield request
           end
@@ -66,7 +66,7 @@ abstract class Croda
         @response : Croda::CrodaResponse
         @remaining_path : String
 
-        def initialize(@request : HTTP::Request, @response : Croda::CrodaResponse, @app : ::Croda)
+        def initialize(@request : HTTP::Request, @response : Croda::CrodaResponse)
           @remaining_path = @request.path
         end
 
@@ -119,7 +119,7 @@ abstract class Croda
         end
 
         def always
-          block_result(with @app yield)
+          block_result(yield)
           throw :halt
         end
 
@@ -127,7 +127,7 @@ abstract class Croda
           path = @remaining_path
 
           if match(arg) && (!terminal || empty_path?)
-            block_result(with @app yield)
+            block_result(yield)
             throw :halt
           else
             @remaining_path = path
@@ -139,7 +139,7 @@ abstract class Croda
           path = @remaining_path
 
           if (result = match(arg)) && (!terminal || empty_path?)
-            block_result(with @app yield result)
+            block_result(yield result)
             throw :halt
           else
             @remaining_path = path
