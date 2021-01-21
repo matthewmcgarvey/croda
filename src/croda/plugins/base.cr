@@ -75,7 +75,7 @@ abstract class Croda
           always(&block)
         end
 
-        def on(arg : String, &block : -> _) : Nil
+        def on(arg : String | Bool, &block : -> _) : Nil
           if_match(arg, &block)
         end
 
@@ -87,7 +87,7 @@ abstract class Croda
           always(&block) if empty_path?
         end
 
-        def is(arg : String, &block : -> _) : Nil
+        def is(arg : String | Bool, &block : -> _) : Nil
           if_match(arg, terminal: true, &block)
         end
 
@@ -99,7 +99,7 @@ abstract class Croda
           always(&block) if is_get?
         end
 
-        def get(arg : String, &block : -> _) : Nil
+        def get(arg : String | Bool, &block : -> _) : Nil
           if_match(arg, terminal: true, &block) if is_get?
         end
 
@@ -111,7 +111,7 @@ abstract class Croda
           always(&block) if is_post?
         end
 
-        def post(arg : String, &block : -> _) : Nil
+        def post(arg : String | Bool, &block : -> _) : Nil
           if_match(arg, terminal: true, &block) if is_post?
         end
 
@@ -124,7 +124,7 @@ abstract class Croda
           throw :halt
         end
 
-        def if_match(arg : String, terminal = false)
+        def if_match(arg : String | Bool, terminal = false)
           path = @remaining_path
 
           if match(arg) && (!terminal || empty_path?)
@@ -205,6 +205,10 @@ abstract class Croda
             # remaining_path.
             false
           end
+        end
+
+        private def match(arg : Bool) : Bool
+          arg
         end
 
         private def match(arg : Int32.class) : Int32?
