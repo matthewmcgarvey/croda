@@ -150,7 +150,7 @@ abstract class Croda
 
         def block_result(result)
           if body = block_result_body(result)
-            @response.print(body)
+            @response.write(body)
           end
         end
 
@@ -243,13 +243,27 @@ abstract class Croda
       end
 
       module ResponseMethods
+        @body : String?
+        @status : Int32?
+
         def initialize(@response : HTTP::Server::Response)
         end
 
-        forward_missing_to @response
+        def write(body)
+          @body = body.to_s
+        end
 
         def finish
           set_default_headers
+          status = @status
+
+          if body = @body
+            @response.print(body)
+            status ||= 200
+          else
+            status ||= 404
+          end
+          @response.status = HTTP::Status.new(status)
         end
 
         def set_default_headers
