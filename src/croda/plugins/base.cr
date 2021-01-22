@@ -80,7 +80,7 @@ abstract class Croda
 
         def on : Nil
           block_result(yield)
-          throw :halt
+          halt
         end
 
         def on(arg) : Nil
@@ -88,7 +88,7 @@ abstract class Croda
 
           if result = match(arg)
             block_result(yield *result)
-            throw :halt
+            halt
           else
             @remaining_path = path
             false
@@ -99,7 +99,7 @@ abstract class Croda
           return if empty_path?
 
           block_result(yield)
-          throw :halt
+          halt
         end
 
         def is(arg) : Nil
@@ -107,7 +107,7 @@ abstract class Croda
 
           if (result = match(arg)) && empty_path?
             block_result(yield *result)
-            throw :halt
+            halt
           else
             @remaining_path = path
             false
@@ -117,7 +117,7 @@ abstract class Croda
         def root : Nil
           if remaining_path == "/" && is_get?
             block_result(yield)
-            throw :halt
+            halt
           end
         end
 
@@ -125,7 +125,7 @@ abstract class Croda
           return unless is_get?
 
           block_result(yield)
-          throw :halt
+          halt
         end
 
         def get(arg) : Nil
@@ -135,7 +135,7 @@ abstract class Croda
 
           if (result = match(arg)) && empty_path?
             block_result(yield *result)
-            throw :halt
+            halt
           else
             @remaining_path = path
             false
@@ -146,7 +146,7 @@ abstract class Croda
           return unless is_post?
 
           block_result(yield)
-          throw :halt
+          halt
         end
 
         def post(arg) : Nil
@@ -156,7 +156,7 @@ abstract class Croda
 
           if (result = match(arg)) && empty_path?
             block_result(yield *result)
-            throw :halt
+            halt
           else
             @remaining_path = path
             false
@@ -165,11 +165,15 @@ abstract class Croda
 
         def redirect(path, status = 302)
           @response.redirect(path, status)
-          throw :halt
+          halt
         end
 
         def always : Nil
           block_result(yield)
+          halt
+        end
+
+        def halt
           throw :halt
         end
 
