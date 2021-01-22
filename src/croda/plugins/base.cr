@@ -78,75 +78,94 @@ abstract class Croda
           @remaining_path = @request.path
         end
 
-        def on(&block : -> _) : Nil
-          always(&block)
-        end
-
-        def on(arg, &block : -> _) : Nil
-          if_match(arg, &block)
-        end
-
-        def on(arg : T.class, &block : T -> _) : Nil forall T
-          if_match(arg, &block)
-        end
-
-        def is(&block : -> _) : Nil
-          always(&block) if empty_path?
-        end
-
-        def is(arg, &block : -> _) : Nil
-          if_match(arg, terminal: true, &block)
-        end
-
-        def is(arg : T.class, &block : T -> _) : Nil forall T
-          if_match(arg, terminal: true, &block)
-        end
-
-        def root(&block : -> _) : Nil
-          if remaining_path == "/" && is_get?
-            always(&block)
-          end
-        end
-
-        def get(&block : -> _) : Nil
-          always(&block) if is_get?
-        end
-
-        def get(arg, &block : -> _) : Nil
-          if_match(arg, terminal: true, &block) if is_get?
-        end
-
-        def get(arg : T.class, &block : T -> _) : Nil forall T
-          if_match(arg, terminal: true, &block) if is_get?
-        end
-
-        def post(&block : -> _) : Nil
-          always(&block) if is_post?
-        end
-
-        def post(arg, &block : -> _) : Nil
-          if_match(arg, terminal: true, &block) if is_post?
-        end
-
-        def post(arg : T.class, &block : T -> _) : Nil forall T
-          if_match(arg, terminal: true, &block) if is_post?
-        end
-
-        def always : Nil
+        def on : Nil
           block_result(yield)
           throw :halt
         end
 
-        def if_match(arg, terminal = false)
+        def on(arg) : Nil
           path = @remaining_path
 
-          if (result = match(arg)) && (!terminal || empty_path?)
+          if result = match(arg)
             block_result(yield *result)
             throw :halt
           else
             @remaining_path = path
             false
           end
+        end
+
+        def is : Nil
+          return if empty_path?
+
+          block_result(yield)
+          throw :halt
+        end
+
+        def is(arg) : Nil
+          path = @remaining_path
+
+          if (result = match(arg)) && empty_path?
+            block_result(yield *result)
+            throw :halt
+          else
+            @remaining_path = path
+            false
+          end
+        end
+
+        def root : Nil
+          if remaining_path == "/" && is_get?
+            block_result(yield)
+            throw :halt
+          end
+        end
+
+        def get : Nil
+          return unless is_get?
+
+          block_result(yield)
+          throw :halt
+        end
+
+        def get(arg) : Nil
+          return unless is_get?
+
+          path = @remaining_path
+
+          if (result = match(arg)) && empty_path?
+            block_result(yield *result)
+            throw :halt
+          else
+            @remaining_path = path
+            false
+          end
+        end
+
+        def post : Nil
+          return unless is_post?
+
+          block_result(yield)
+          throw :halt
+        end
+
+        def post(arg) : Nil
+          return unless is_post?
+
+          path = @remaining_path
+
+          if (result = match(arg)) && empty_path?
+            block_result(yield *result)
+            throw :halt
+          else
+            @remaining_path = path
+            false
+          end
+        end
+
+        def always : Nil
+          block_result(yield)
+          throw :halt
         end
 
         def block_result(result)
