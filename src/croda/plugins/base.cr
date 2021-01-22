@@ -231,20 +231,24 @@ abstract class Croda
         end
 
         private def match(arg : Regex) : Tuple(Regex::MatchData)?
+          capture(arg) do |matchdata|
+            {matchdata}
+          end
+        end
+
+        private def match(arg : Int32.class) : Tuple(Int32)?
+          capture(/\A\/(\d+)(?=\/|\z)/) do |matchdata|
+            path_var = matchdata.captures.first.not_nil!
+            {path_var.to_i}
+          end
+        end
+
+        private def capture(arg)
           matchdata = @remaining_path.match(arg)
           return if matchdata.nil?
 
           @remaining_path = matchdata.post_match
-          {matchdata}
-        end
-
-        private def match(arg : Int32.class) : Tuple(Int32)?
-          matchdata = @remaining_path.match(/\A\/(\d+)(?=\/|\z)/)
-          return if matchdata.nil?
-
-          @remaining_path = matchdata.post_match
-          path_var = matchdata.captures.first.not_nil!
-          {path_var.to_i}
+          yield matchdata
         end
 
         private def match(arg : String.class) : Tuple(String)?
