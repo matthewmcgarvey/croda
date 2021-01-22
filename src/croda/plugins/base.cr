@@ -152,7 +152,7 @@ abstract class Croda
         def if_match(arg : T.class, terminal = false) forall T
           path = @remaining_path
 
-          if (result = match_class(arg)) && (!terminal || empty_path?)
+          if (result = match(arg)) && (!terminal || empty_path?)
             block_result(yield result)
             throw :halt
           else
@@ -224,7 +224,7 @@ abstract class Croda
           arg
         end
 
-        private def match_class(arg : Int32.class) : Int32?
+        private def match(arg : Int32.class) : Int32?
           matchdata = @remaining_path.match(/\A\/(\d+)(?=\/|\z)/)
           return if matchdata.nil?
 
@@ -233,7 +233,7 @@ abstract class Croda
           path_var.to_i
         end
 
-        private def match_class(arg : String.class) : String?
+        private def match(arg : String.class) : String?
           rp = @remaining_path
           return unless rp.byte_at?(0) == 47
 
