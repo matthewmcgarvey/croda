@@ -230,6 +230,14 @@ abstract class Croda
           arg ? Tuple.new : nil
         end
 
+        private def match(arg : Regex) : Tuple(Regex::MatchData)?
+          matchdata = @remaining_path.match(arg)
+          return if matchdata.nil?
+
+          @remaining_path = matchdata.post_match
+          {matchdata}
+        end
+
         private def match(arg : Int32.class) : Tuple(Int32)?
           matchdata = @remaining_path.match(/\A\/(\d+)(?=\/|\z)/)
           return if matchdata.nil?
