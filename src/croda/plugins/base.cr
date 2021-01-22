@@ -163,6 +163,11 @@ abstract class Croda
           end
         end
 
+        def redirect(path, status = 302)
+          @response.redirect(path, status)
+          throw :halt
+        end
+
         def always : Nil
           block_result(yield)
           throw :halt
@@ -290,6 +295,10 @@ abstract class Croda
 
         def write(body)
           @body = body.to_s
+        end
+
+        def redirect(path : String, @status : Int32) : Nil
+          @response.headers["Location"] = path
         end
 
         def finish
