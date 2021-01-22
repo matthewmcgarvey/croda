@@ -82,7 +82,7 @@ abstract class Croda
           always(&block)
         end
 
-        def on(arg : String | Bool, &block : -> _) : Nil
+        def on(arg, &block : -> _) : Nil
           if_match(arg, &block)
         end
 
@@ -94,7 +94,7 @@ abstract class Croda
           always(&block) if empty_path?
         end
 
-        def is(arg : String | Bool, &block : -> _) : Nil
+        def is(arg, &block : -> _) : Nil
           if_match(arg, terminal: true, &block)
         end
 
@@ -112,7 +112,7 @@ abstract class Croda
           always(&block) if is_get?
         end
 
-        def get(arg : String | Bool, &block : -> _) : Nil
+        def get(arg, &block : -> _) : Nil
           if_match(arg, terminal: true, &block) if is_get?
         end
 
@@ -124,7 +124,7 @@ abstract class Croda
           always(&block) if is_post?
         end
 
-        def post(arg : String | Bool, &block : -> _) : Nil
+        def post(arg, &block : -> _) : Nil
           if_match(arg, terminal: true, &block) if is_post?
         end
 
@@ -137,7 +137,7 @@ abstract class Croda
           throw :halt
         end
 
-        def if_match(arg : String | Bool, terminal = false)
+        def if_match(arg, terminal = false)
           path = @remaining_path
 
           if match(arg) && (!terminal || empty_path?)
@@ -152,7 +152,7 @@ abstract class Croda
         def if_match(arg : T.class, terminal = false) forall T
           path = @remaining_path
 
-          if (result = match(arg)) && (!terminal || empty_path?)
+          if (result = match_class(arg)) && (!terminal || empty_path?)
             block_result(yield result)
             throw :halt
           else
@@ -224,7 +224,7 @@ abstract class Croda
           arg
         end
 
-        private def match(arg : Int32.class) : Int32?
+        private def match_class(arg : Int32.class) : Int32?
           matchdata = @remaining_path.match(/\A\/(\d+)(?=\/|\z)/)
           return if matchdata.nil?
 
@@ -233,7 +233,7 @@ abstract class Croda
           path_var.to_i
         end
 
-        private def match(arg : String.class) : String?
+        private def match_class(arg : String.class) : String?
           rp = @remaining_path
           return unless rp.byte_at?(0) == 47
 
