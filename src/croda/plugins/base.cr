@@ -239,6 +239,12 @@ abstract class Croda
           arg ? Tuple.new : nil
         end
 
+        private def match(arg : Array(String)) : Tuple(String)?
+          segment = arg.find { |segment| match(segment) }
+
+          segment.nil? ? nil : {segment}
+        end
+
         private def match(arg : Regex) : Tuple(Regex::MatchData)?
           capture(arg) do |matchdata|
             {matchdata}
