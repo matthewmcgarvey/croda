@@ -293,8 +293,10 @@ abstract class Croda
       module ResponseMethods
         @body : String?
         property status : Int32?
+        getter headers : HTTP::Headers
 
         def initialize(@response : HTTP::Server::Response)
+          @headers = @response.headers
         end
 
         def write(body)
