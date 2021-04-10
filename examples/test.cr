@@ -2,6 +2,7 @@ require "../src/croda"
 
 class App < Croda
   plugin Croda::CrodaPlugins::Json
+  plugin Croda::CrodaPlugins::Render
 
   route do |r|
     r.on "users" do
@@ -13,6 +14,10 @@ class App < Croda
         r.is do
           "WOAH!"
         end
+      end
+
+      r.get "html" do
+        render "examples/html.ecr"
       end
 
       r.is Int32 do |user_id|
