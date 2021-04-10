@@ -6,7 +6,7 @@ abstract class Croda
           {% if imc = instance_methods_class.resolve? %}
             include {{ imc }}
           {% end %}
-      
+
           {% if cmc = class_methods_class.resolve? %}
             extend {{ cmc }}
           {% end %}
@@ -18,7 +18,7 @@ abstract class Croda
               include {{ imc }}
             end
           {% end %}
-      
+
           {% if cmc = class_methods_class.resolve? %}
             class ::Croda::CrodaRequest
               extend {{ cmc }}
@@ -32,7 +32,7 @@ abstract class Croda
               include {{ imc }}
             end
           {% end %}
-      
+
           {% if cmc = class_methods_class.resolve? %}
             class ::Croda::CrodaResponse
               extend {{ cmc }}
