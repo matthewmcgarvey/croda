@@ -96,7 +96,7 @@ abstract class Croda
         end
 
         def is : Nil
-          return if empty_path?
+          return unless empty_path?
 
           block_result(yield)
           halt
