@@ -10,5 +10,7 @@ abstract class Croda
         end
       end
     end
+
+    register_plugin :json, Croda::CrodaPlugins::Json
   end
 end

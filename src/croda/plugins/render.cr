@@ -9,5 +9,7 @@ abstract class Croda
         end
       end
     end
+
+    register_plugin :render, Croda::CrodaPlugins::Render
   end
 end

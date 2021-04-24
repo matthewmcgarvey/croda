@@ -2,7 +2,7 @@ require "../src/croda"
 
 class App < Croda
   plugin :json
-  plugin Croda::CrodaPlugins::Render
+  plugin :render
 
   route do |r|
     r.on "users" do
