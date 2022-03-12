@@ -40,13 +40,16 @@ abstract class Croda
           {% end %}
         end
 
-        macro plugin(type)
+        macro plugin(type, **named_args)
           {% if type.is_a?(SymbolLiteral) %}
             {% type = Croda::CrodaPlugins::REGISTERED_PLUGINS[type] %}
           {% end %}
           croda_plugin({{ "#{type}::InstanceMethods".id }}, {{ "#{type}::ClassMethods".id }})
           request_plugin({{ "#{type}::RequestMethods".id }}, {{ "#{type}::RequestClassMethods".id }})
           response_plugin({{ "#{type}::ResponseMethods".id }}, {{ "#{type}::ResponseClassMethods".id }})
+          if (plug = {{ type }}).responds_to?(:configure)
+            plug.configure(self, {{ **named_args }})
+          end
         end
 
         macro route(&block)

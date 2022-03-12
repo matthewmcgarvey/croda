@@ -1,13 +1,13 @@
 require "../src/croda"
 
 class App < Croda
-  plugin :json
+  plugin :json, foo: "bar"
   plugin :render
 
   route do |r|
     r.on "users" do
       users = [
-        {id: 1, name: "Tommy"}
+        {id: 1, name: "Tommy"},
       ]
 
       r.on "me" do
