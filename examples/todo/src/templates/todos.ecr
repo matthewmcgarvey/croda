@@ -1,0 +1,15 @@
+Hey
+
+<form action="/todos" method="POST">
+  <input type="text" name="task" required>
+  <button type="submit">Add</button>
+</form>
+
+<div>
+  Todos:
+  <ul>
+  <%- todos.each do |todo| -%>
+    <li><%= todo[:task] %></li>
+  <%- end -%>
+  </ul>
+</div>

@@ -1,7 +1,7 @@
 require "../src/croda"
 
 class App < Croda
-  plugin :json, foo: "bar"
+  plugin :json
   plugin :render
 
   route do |r|

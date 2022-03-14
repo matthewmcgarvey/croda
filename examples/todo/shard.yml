@@ -1,0 +1,13 @@
+name: todo
+version: 0.1.0
+
+dependencies:
+  croda:
+    path: ../../
+  sqlite3:
+    github: crystal-lang/crystal-sqlite3
+    version: ~> 0.19.0
+development_dependencies:
+  micrate:
+    github: amberframework/micrate
+    version: ~> 0.12.0

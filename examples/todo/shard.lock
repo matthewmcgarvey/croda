@@ -1,0 +1,23 @@
+# NOTICE: This lockfile contains some overrides from shard.override.yml
+version: 2.0
+shards:
+  croda:
+    path: ../../
+    version: 0.1.0
+
+  db: # Overridden
+    git: https://github.com/crystal-lang/crystal-db.git
+    version: 0.11.0
+
+  kilt:
+    git: https://github.com/jeromegn/kilt.git
+    version: 0.6.1
+
+  micrate:
+    git: https://github.com/amberframework/micrate.git
+    version: 0.12.0
+
+  sqlite3:
+    git: https://github.com/crystal-lang/crystal-sqlite3.git
+    version: 0.19.0
+

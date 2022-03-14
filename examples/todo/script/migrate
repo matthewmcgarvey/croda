@@ -1,0 +1,11 @@
+#! /usr/bin/env crystal
+#
+# To build a standalone command line client, require the
+# driver you wish to use and use `Micrate::Cli`.
+#
+
+require "micrate"
+require "sqlite3"
+
+Micrate::DB.connection_url = "sqlite3:./development.db"
+Micrate::Cli.run
