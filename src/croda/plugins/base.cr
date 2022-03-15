@@ -59,19 +59,30 @@ abstract class Croda
         end
 
         @response : Croda::CrodaResponse?
+        @request : Croda::CrodaRequest?
 
         def execute(context)
           response = @response = Croda::CrodaResponse.new(context.response)
-          request = Croda::CrodaRequest.new(context.request, response)
+          request = @request = Croda::CrodaRequest.new(context.request, response)
           catch :halt do
             yield request
           end
+          after_hook
           response.finish
           @response = nil
+          @request = nil
         end
 
         def response : Croda::CrodaResponse
           @response.not_nil!
+        end
+
+        def request : Croda::CrodaRequest
+          @request.not_nil!
+        end
+
+        def after_hook
+          # do nothing
         end
       end
 
