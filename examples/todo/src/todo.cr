@@ -8,10 +8,14 @@ class App < Croda
   plugin :render
   plugin :json
   plugin :request_body
+  plugin :cookies
 
   route do |r|
     r.root do
       todos = DATABASE.query_all("SELECT * FROM todos", as: {id: Int32, task: String, completed_at: Time?})
+      cookies = r.cookies
+      pp cookies["foo"]?.try(&.value)
+      response.delete_cookie("foo")
       render "src/templates/todos.ecr"
     end
 
@@ -19,6 +23,7 @@ class App < Croda
       form = r.form
       task = form["task"]
       DATABASE.exec("INSERT INTO todos (task) VALUES (?)", task)
+      response.set_cookie("foo", "bar")
       r.redirect "/"
     end
   end

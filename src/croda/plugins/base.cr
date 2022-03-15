@@ -84,6 +84,10 @@ abstract class Croda
           @remaining_path = @request.path
         end
 
+        def headers : HTTP::Headers
+          @request.headers
+        end
+
         def on : Nil
           block_result(yield)
           halt
