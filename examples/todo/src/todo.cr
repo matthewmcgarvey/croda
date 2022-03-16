@@ -15,6 +15,7 @@ class App < Croda
     r.root do
       todos = DATABASE.query_all("SELECT * FROM todos", as: {id: Int32, task: String, completed_at: Time?})
       pp session
+      clear_session
       render "src/templates/todos.ecr"
     end
 

@@ -11,9 +11,14 @@ abstract class Croda
           request.session
         end
 
-        def after_hook
-          super
-          request.persist_session(response, session)
+        def clear_session
+          session.clear
+        end
+
+        macro included
+          after_hook 50 do
+            request.persist_session(response, session)
+          end
         end
       end
 

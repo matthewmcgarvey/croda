@@ -58,16 +58,27 @@ abstract class Croda
           end
         end
 
+        macro after_hook(int, &block)
+          def _croda_hook_setup
+            super
+            proc : Proc(Nil)
+            proc = -> {{ block }}
+            @after_hooks << { {{ int }}, proc }
+          end
+        end
+
         @response : Croda::CrodaResponse?
         @request : Croda::CrodaRequest?
+        @after_hooks = [] of {Int32, Proc(Nil)}
 
         def execute(context)
           response = @response = Croda::CrodaResponse.new(context.response)
           request = @request = Croda::CrodaRequest.new(context.request, response)
+          _croda_hook_setup
           catch :halt do
             yield request
           end
-          after_hook
+          run_after_hooks
           response.finish
           @response = nil
           @request = nil
@@ -81,8 +92,11 @@ abstract class Croda
           @request.not_nil!
         end
 
-        def after_hook
-          # do nothing
+        def _croda_hook_setup
+        end
+
+        def run_after_hooks
+          @after_hooks.sort_by(&.first).map(&.[](1)).each(&.call)
         end
       end
 
