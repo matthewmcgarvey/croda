@@ -10,12 +10,12 @@ class App < Croda
   plugin :request_body
   plugin :cookies
   plugin :sessions
+  plugin :flash
 
   route do |r|
     r.root do
       todos = DATABASE.query_all("SELECT * FROM todos", as: {id: Int32, task: String, completed_at: Time?})
-      pp session
-      clear_session
+      pp flash.now
       render "src/templates/todos.ecr"
     end
 
@@ -23,7 +23,7 @@ class App < Croda
       form = r.form
       task = form["task"]
       DATABASE.exec("INSERT INTO todos (task) VALUES (?)", task)
-      session["foo"] = "bar"
+      flash["foo"] = "bar"
       r.redirect "/"
     end
   end
