@@ -12,7 +12,7 @@ abstract class Croda
         end
 
         def after_hook
-          # previous_def
+          super
           request.persist_session(response, session)
         end
       end
