@@ -16,3 +16,5 @@ Just thinking through my options:
 - Move anything that could be persisted across requests into the request instance methods
   - There can still be app instance methods, but they call methods on the request and would not be memoized
   - The session plugin does this already
+
+FIXED: moved memoization to request instance, though it makes the code a little uglier

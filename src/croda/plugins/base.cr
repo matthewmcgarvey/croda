@@ -62,11 +62,11 @@ abstract class Croda
         AFTER_HOOK_METHODS = [] of String
 
         macro after_hook(int, &block)
-          def _croda_after_hook_{{ COUNTER.size }}
+          def _croda_after_hook_{{ int }}_{{ COUNTER.size }}
             {{ yield }}
           end
 
-          {% AFTER_HOOK_METHODS << "_croda_after_hook_#{COUNTER.size}" %}
+          {% AFTER_HOOK_METHODS << "_croda_after_hook_#{int}_#{COUNTER.size}" %}
           {% COUNTER << nil %}
         end
 
