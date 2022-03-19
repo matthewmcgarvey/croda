@@ -58,12 +58,23 @@ abstract class Croda
           end
         end
 
+        COUNTER            = [] of Nil
+        AFTER_HOOK_METHODS = [] of String
+
         macro after_hook(int, &block)
-          def _croda_hook_setup
-            super
-            proc : Proc(Nil)
-            proc = -> {{ block }}
-            @after_hooks << { {{ int }}, proc }
+          def _croda_after_hook_{{ COUNTER.size }}
+            {{ yield }}
+          end
+
+          {% AFTER_HOOK_METHODS << "_croda_after_hook_#{COUNTER.size}" %}
+          {% COUNTER << nil %}
+        end
+
+        macro finished
+          def run_after_hooks
+            {% for setup_method in AFTER_HOOK_METHODS.sort %}
+              {{ setup_method.id }}
+            {% end %}
           end
         end
 
@@ -74,7 +85,6 @@ abstract class Croda
         def execute(context)
           response = @response = Croda::CrodaResponse.new(context.response)
           request = @request = Croda::CrodaRequest.new(context.request, response)
-          _croda_hook_setup
           catch :halt do
             yield request
           end
