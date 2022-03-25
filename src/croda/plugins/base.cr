@@ -56,7 +56,11 @@ abstract class Croda
 
         macro route(&block)
           def call(context)
-            execute(context) {{ block }}
+            response = @response = Croda::CrodaResponse.new(context.response)
+            request = @request = Croda::CrodaRequest.new(context.request, response)
+            execute(request, response) {{ block }}
+            @response = nil
+            @request = nil
           end
         end
 
@@ -84,16 +88,12 @@ abstract class Croda
         @request : Croda::CrodaRequest?
         @after_hooks = [] of {Int32, Proc(Nil)}
 
-        def execute(context)
-          response = @response = Croda::CrodaResponse.new(context.response)
-          request = @request = Croda::CrodaRequest.new(context.request, response)
+        def execute(request : Croda::CrodaRequest, response : Croda::CrodaResponse)
           catch :halt do
             yield request
           end
           run_after_hooks
           response.finish
-          @response = nil
-          @request = nil
         end
 
         def response : Croda::CrodaResponse

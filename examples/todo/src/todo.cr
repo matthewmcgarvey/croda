@@ -12,7 +12,6 @@ class App < Croda
   plugin :sessions
   plugin :flash
   plugin :csrf
-  plugin :ajsdkfasd
 
   route do |r|
     check_csrf!
