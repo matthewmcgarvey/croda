@@ -9,12 +9,19 @@ abstract class Croda
           @request.body
         end
 
+        @body : Bool | String | Nil = false
+
         def body : String?
-          raw_body.try(&.gets_to_end)
+          temp = @body
+          return temp unless temp.is_a?(Bool)
+
+          @body = raw_body.try(&.gets_to_end)
         end
 
+        @form : URI::Params?
+
         def form : URI::Params
-          URI::Params.parse(body.not_nil!)
+          @form ||= URI::Params.parse(body.not_nil!)
         end
       end
     end
