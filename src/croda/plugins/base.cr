@@ -42,7 +42,9 @@ abstract class Croda
 
         macro plugin(type, **named_args)
           {% if type.is_a?(SymbolLiteral) %}
-            {% type = Croda::CrodaPlugins::REGISTERED_PLUGINS[type] %}
+            {% temp_type = Croda::CrodaPlugins::REGISTERED_PLUGINS[type] %}
+            {% raise "Unknown plugin type: #{type}" unless temp_type %}
+            {% type = temp_type %}
           {% end %}
           croda_plugin({{ "#{type}::InstanceMethods".id }}, {{ "#{type}::ClassMethods".id }})
           request_plugin({{ "#{type}::RequestMethods".id }}, {{ "#{type}::RequestClassMethods".id }})
