@@ -123,6 +123,10 @@ abstract class Croda
           @request.headers
         end
 
+        def method : String
+          @request.method
+        end
+
         def on : Nil
           block_result(yield)
           halt

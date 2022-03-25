@@ -1,6 +1,7 @@
 Hey
 
 <form action="/todos" method="POST">
+  <%= csrf_field %>
   <input type="text" name="task" required>
   <button type="submit">Add</button>
 </form>

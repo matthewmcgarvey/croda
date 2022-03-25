@@ -11,8 +11,11 @@ class App < Croda
   plugin :cookies
   plugin :sessions
   plugin :flash
+  plugin :csrf
 
   route do |r|
+    check_csrf!
+
     r.root do
       todos = DATABASE.query_all("SELECT * FROM todos", as: {id: Int32, task: String, completed_at: Time?})
       pp flash.now
