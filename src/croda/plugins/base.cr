@@ -1,6 +1,12 @@
 abstract class Croda
   module CrodaPlugins
     module Base
+      module ClassMethods
+        def execute(context : HTTP::Server::Context)
+          new(context).execute
+        end
+      end
+
       module InstanceMethods
         macro croda_plugin(instance_methods_class, class_methods_class)
           {% if imc = instance_methods_class.resolve? %}
@@ -55,12 +61,8 @@ abstract class Croda
         end
 
         macro route(&block)
-          def call(context)
-            response = @response = Croda::CrodaResponse.new(context.response)
-            request = @request = Croda::CrodaRequest.new(context.request, response)
-            execute(request, response) {{ block }}
-            @response = nil
-            @request = nil
+          def execute
+            _execute {{ block }}
           end
         end
 
@@ -84,24 +86,21 @@ abstract class Croda
           end
         end
 
-        @response : Croda::CrodaResponse?
-        @request : Croda::CrodaRequest?
+        getter request : Croda::CrodaRequest
+        getter response : Croda::CrodaResponse
         @after_hooks = [] of {Int32, Proc(Nil)}
 
-        def execute(request : Croda::CrodaRequest, response : Croda::CrodaResponse)
+        def initialize(context : HTTP::Server::Context)
+          @response = Croda::CrodaResponse.new(context.response)
+          @request = Croda::CrodaRequest.new(context.request, response)
+        end
+
+        def _execute
           catch :halt do
             yield request
           end
           run_after_hooks
           response.finish
-        end
-
-        def response : Croda::CrodaResponse
-          @response.not_nil!
-        end
-
-        def request : Croda::CrodaRequest
-          @request.not_nil!
         end
 
         def run_after_hooks
