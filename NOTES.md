@@ -2,6 +2,17 @@
 
 General notes. Not documentation but might contain helpful things.
 
+## March 30, 2022
+
+Tried to go down the route of a `Croda` class _extending_ `HTTP::Handler` instead of _including_ it.
+That doesn't work since `HTTP::Handler` defines an instance-level property.
+
+The solution I went with is to add a generic `Croda::Handler` that takes in the `Croda` class.
+That way, the lifecycle of user's apps are for the request and I don't have to worry about memoization on the instance
+and can guarantee that the request and response aren't nil.
+
+I was fixated on doing it Roda's way, but this way works too. It will be even cleaner in the future once I wrap creating the server as well.
+
 ## March 18, 2022
 
 Fixing the hooks for Flash and Session plugins revealed a larger problem.
