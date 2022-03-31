@@ -162,21 +162,21 @@ abstract class Croda
         end
 
         def root : Nil
-          if remaining_path == "/" && is_get?
+          if remaining_path == "/" && method_matches?("GET")
             block_result(yield)
             halt
           end
         end
 
         def get : Nil
-          return unless is_get?
+          return unless method_matches?("GET")
 
           block_result(yield)
           halt
         end
 
         def get(arg) : Nil
-          return unless is_get?
+          return unless method_matches?("GET")
 
           path = @remaining_path
 
@@ -190,14 +190,14 @@ abstract class Croda
         end
 
         def post : Nil
-          return unless is_post?
+          return unless method_matches?("POST")
 
           block_result(yield)
           halt
         end
 
         def post(arg) : Nil
-          return unless is_post?
+          return unless method_matches?("POST")
 
           path = @remaining_path
 
@@ -326,12 +326,8 @@ abstract class Croda
           end
         end
 
-        private def is_get?
-          request_method == "GET"
-        end
-
-        private def is_post?
-          request_method == "POST"
+        private def method_matches?(verb : String)
+          request_method == verb
         end
 
         private def path_matches?(path)

@@ -12,9 +12,10 @@ class App < Croda
   plugin :sessions
   plugin :flash
   plugin :csrf
+  plugin :all_verbs
 
   route do |r|
-    check_csrf!
+    # check_csrf!
 
     r.root do
       todos = DATABASE.query_all("SELECT * FROM todos", as: {id: Int32, task: String, completed_at: Time?})
@@ -28,6 +29,10 @@ class App < Croda
       DATABASE.exec("INSERT INTO todos (task) VALUES (?)", task)
       flash["foo"] = "bar"
       r.redirect "/"
+    end
+
+    r.put "asdf" do
+      "asjdkflasd"
     end
   end
 end
