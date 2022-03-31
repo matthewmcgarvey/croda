@@ -104,9 +104,6 @@ abstract class Croda
           @request.not_nil!
         end
 
-        def _croda_hook_setup
-        end
-
         def run_after_hooks
           @after_hooks.sort_by(&.first).map(&.[](1)).each(&.call)
         end
