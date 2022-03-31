@@ -1,8 +1,6 @@
 abstract class Croda
   module CrodaPlugins
     module Flash
-      FLASH_KEY = "_flash"
-
       class FlashStore
         getter now : Hash(String, String)
         getter nexts = Hash(String, String).new
@@ -33,34 +31,34 @@ abstract class Croda
       end
 
       module InstanceMethods
+        FLASH_KEY = "_flash"
+
         macro included
           after_hook 40 do
-            if f = request.flash
+            if f = @flash
               next_flashes = f.nexts
               if next_flashes.empty?
-                session.delete(Croda::CrodaPlugins::Flash::FLASH_KEY)
+                session.delete(FLASH_KEY)
               else
-                session[Croda::CrodaPlugins::Flash::FLASH_KEY] = next_flashes.to_json
+                session[FLASH_KEY] = next_flashes.to_json
               end
             end
           end
         end
 
+        @flash : FlashStore? = nil
+
         def flash : FlashStore
-          request.flash || request.load_flash
+          @flash ||= load_flash
         end
-      end
 
-      module RequestMethods
-        protected getter flash : FlashStore? = nil
-
-        protected def load_flash : FlashStore
-          hash = if raw_flash = session[Croda::CrodaPlugins::Flash::FLASH_KEY]?
+        private def load_flash : FlashStore
+          hash = if raw_flash = session[FLASH_KEY]?
                    Hash(String, String).from_json(raw_flash)
                  else
                    Hash(String, String).new
                  end
-          @flash = FlashStore.new(hash)
+          FlashStore.new(hash)
         end
       end
     end
