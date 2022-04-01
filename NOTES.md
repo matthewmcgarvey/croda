@@ -2,6 +2,12 @@
 
 General notes. Not documentation but might contain helpful things.
 
+## March 31, 2022
+
+Wanting to switch to making a real product with this (CryHook).
+I found an random app out there that uses Roda just to see what a project looks like https://github.com/skoona/HomieMonitor.
+It shows me that I really want to add in the `named_routes` plugin. That way it doesn't have to be one big route tree.
+
 ## March 30, 2022
 
 Tried to go down the route of a `Croda` class _extending_ `HTTP::Handler` instead of _including_ it.
