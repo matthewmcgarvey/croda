@@ -13,6 +13,7 @@ class App < Croda
   plugin :flash
   plugin :csrf
   plugin :named_routes
+  plugin :named_routes
 
   route("foo") do |r|
     puts "in foo"

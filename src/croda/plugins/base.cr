@@ -8,6 +8,8 @@ abstract class Croda
       end
 
       module InstanceMethods
+        CRODA_PLUGINS = [] of Nil
+
         macro croda_plugin(instance_methods_class, class_methods_class)
           {% if imc = instance_methods_class.resolve? %}
             include {{ imc }}
@@ -52,12 +54,15 @@ abstract class Croda
             {% raise "Unknown plugin type: #{type}" unless temp_type %}
             {% type = temp_type %}
           {% end %}
-          croda_plugin({{ "#{type}::InstanceMethods".id }}, {{ "#{type}::ClassMethods".id }})
-          request_plugin({{ "#{type}::RequestMethods".id }}, {{ "#{type}::RequestClassMethods".id }})
-          response_plugin({{ "#{type}::ResponseMethods".id }}, {{ "#{type}::ResponseClassMethods".id }})
-          if (plug = {{ type }}).responds_to?(:configure)
-            plug.configure(self, {{ **named_args }})
-          end
+          {% if !CRODA_PLUGINS.includes?(type) %}
+            {% CRODA_PLUGINS << type %}
+            croda_plugin({{ "#{type}::InstanceMethods".id }}, {{ "#{type}::ClassMethods".id }})
+            request_plugin({{ "#{type}::RequestMethods".id }}, {{ "#{type}::RequestClassMethods".id }})
+            response_plugin({{ "#{type}::ResponseMethods".id }}, {{ "#{type}::ResponseClassMethods".id }})
+            if (plug = {{ type }}).responds_to?(:configure)
+              plug.configure(self, {{ **named_args }})
+            end
+          {% end %}
         end
 
         macro route(&block)
