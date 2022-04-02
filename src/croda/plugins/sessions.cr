@@ -16,6 +16,8 @@ abstract class Croda
         end
 
         macro included
+          require_plugin :sessions, :cookies
+
           after_hook 50 do
             request.persist_session(response, session)
           end

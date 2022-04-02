@@ -34,6 +34,8 @@ abstract class Croda
         FLASH_KEY = "_flash"
 
         macro included
+          require_plugin :flash, :sessions
+
           after_hook 40 do
             if f = @flash
               next_flashes = f.nexts
