@@ -65,6 +65,14 @@ abstract class Croda
           {% end %}
         end
 
+        macro require_plugin(plugin, requirement)
+          {% type = Croda::CrodaPlugins::REGISTERED_PLUGINS[requirement] %}
+          {% raise "Unknown plugin: #{requirement}" unless type %}
+          {% if !CRODA_PLUGINS.includes?(type) %}
+            {% raise "The #{plugin} plugin needs the #{requirement} plugin to work correctly. Please add it or move it to be before." %}
+          {% end %}
+        end
+
         macro route(&block)
           def execute
             _execute {{ block }}

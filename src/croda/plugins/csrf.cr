@@ -11,8 +11,8 @@ abstract class Croda
         CSRF_METHODS = %w(POST DELETE PATCH PUT)
 
         macro included
-          # depend on request body parsing to get the CSRF field from the form submission
-          plugin :request_body
+          require_plugin :csrf, :request_body
+          require_plugin :csrf, :sessions
         end
 
         def check_csrf!
