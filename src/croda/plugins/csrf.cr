@@ -10,6 +10,11 @@ abstract class Croda
         CSRF_HEADER  = "X-CSRF-Token"
         CSRF_METHODS = %w(POST DELETE PATCH PUT)
 
+        macro included
+          # depend on request body parsing to get the CSRF field from the form submission
+          plugin :request_body
+        end
+
         def check_csrf!
           return unless CSRF_METHODS.includes?(request.method)
 

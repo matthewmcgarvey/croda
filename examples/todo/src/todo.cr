@@ -7,7 +7,6 @@ DATABASE = DB.open("sqlite3:./development.db")
 class App < Croda
   plugin :render
   plugin :json
-  plugin :request_body
   plugin :cookies
   plugin :sessions
   plugin :flash
