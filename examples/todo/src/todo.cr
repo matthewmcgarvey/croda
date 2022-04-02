@@ -12,7 +12,14 @@ class App < Croda
   plugin :sessions
   plugin :flash
   plugin :csrf
-  plugin :all_verbs
+  plugin :named_routes
+
+  route("foo") do |r|
+    puts "in foo"
+    r.get do
+      "hey there!"
+    end
+  end
 
   route do |r|
     # check_csrf!
@@ -31,9 +38,7 @@ class App < Croda
       r.redirect "/"
     end
 
-    r.put "asdf" do
-      "asjdkflasd"
-    end
+    r.route("foo")
   end
 end
 

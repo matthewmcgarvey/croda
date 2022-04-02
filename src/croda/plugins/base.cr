@@ -86,13 +86,15 @@ abstract class Croda
           end
         end
 
-        getter request : Croda::CrodaRequest
+        getter context : HTTP::Server::Context
+        getter request : Croda::CrodaRequest do
+          Croda::CrodaRequest.new(self, context.request, response)
+        end
         getter response : Croda::CrodaResponse
         @after_hooks = [] of {Int32, Proc(Nil)}
 
-        def initialize(context : HTTP::Server::Context)
+        def initialize(@context : HTTP::Server::Context)
           @response = Croda::CrodaResponse.new(context.response)
-          @request = Croda::CrodaRequest.new(context.request, response)
         end
 
         def _execute
@@ -109,11 +111,12 @@ abstract class Croda
       end
 
       module RequestMethods
+        @scope : Croda
         @request : HTTP::Request
         @response : Croda::CrodaResponse
         property remaining_path : String
 
-        def initialize(@request : HTTP::Request, @response : Croda::CrodaResponse)
+        def initialize(@scope, @request, @response)
           @remaining_path = @request.path
         end
 
