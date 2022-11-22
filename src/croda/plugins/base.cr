@@ -49,11 +49,11 @@ abstract class Croda
         end
 
         macro plugin(type, **named_args)
-          {% if type.is_a?(SymbolLiteral) %}
-            {% temp_type = Croda::CrodaPlugins::REGISTERED_PLUGINS[type] %}
-            {% raise "Unknown plugin type: #{type}" unless temp_type %}
-            {% type = temp_type %}
-          {% end %}
+          {% if type.is_a?(SymbolLiteral)
+               temp_type = Croda::CrodaPlugins::REGISTERED_PLUGINS[type]
+               raise "Unknown plugin type: #{type}" unless temp_type
+               type = temp_type
+             end %}
           {% if !CRODA_PLUGINS.includes?(type) %}
             {% CRODA_PLUGINS << type %}
             croda_plugin({{ "#{type}::InstanceMethods".id }}, {{ "#{type}::ClassMethods".id }})
@@ -66,11 +66,11 @@ abstract class Croda
         end
 
         macro require_plugin(plugin, requirement)
-          {% type = Croda::CrodaPlugins::REGISTERED_PLUGINS[requirement] %}
-          {% raise "Unknown plugin: #{requirement}" unless type %}
-          {% if !CRODA_PLUGINS.includes?(type) %}
-            {% raise "The #{plugin} plugin needs the #{requirement} plugin to work correctly. Please add it or move it to be before." %}
-          {% end %}
+          {% type = Croda::CrodaPlugins::REGISTERED_PLUGINS[requirement]
+             raise "Unknown plugin: #{requirement}" unless type
+             if !CRODA_PLUGINS.includes?(type)
+               raise "The #{plugin} plugin needs the #{requirement} plugin to work correctly. Please add it or move it to be before."
+             end %}
         end
 
         macro route(&block)
