@@ -36,7 +36,7 @@ class App < Croda
 end
 
 server = HTTP::Server.new([
-  App.new,
+  Croda::Handler.new(App),
 ])
 server.bind_tcp "127.0.0.1", 3000
 puts "Server running on http://127.0.0.1:3000"

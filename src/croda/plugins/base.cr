@@ -110,7 +110,7 @@ abstract class Croda
           @response = Croda::CrodaResponse.new(context.response)
         end
 
-        def _execute
+        def _execute(&block : Croda::CrodaRequest -> Nil)
           catch :halt do
             yield request
           end
@@ -129,7 +129,7 @@ abstract class Croda
         @response : Croda::CrodaResponse
         property remaining_path : String
 
-        def initialize(@scope, @request, @response)
+        def initialize(@scope, @request : HTTP::Request, @response)
           @remaining_path = @request.path
         end
 
@@ -262,7 +262,7 @@ abstract class Croda
           @remaining_path.empty?
         end
 
-        private def match(arg : String)
+        private def match(arg : String) : Tuple()?
           rp = @remaining_path
           length = arg.size
 
@@ -298,7 +298,7 @@ abstract class Croda
           end
         end
 
-        private def match(arg : Bool)
+        private def match(arg : Bool) : Tuple()?
           arg ? Tuple.new : nil
         end
 
