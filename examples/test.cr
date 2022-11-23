@@ -1,8 +1,8 @@
 require "../src/croda"
+require "ecr"
 
 class App < Croda
   plugin :json
-  plugin :render
 
   route do |r|
     r.on "users" do
@@ -17,7 +17,7 @@ class App < Croda
       end
 
       r.get "html" do
-        render "examples/html.ecr"
+        ECR.render "examples/html.ecr"
       end
 
       r.is Int32 do |user_id|

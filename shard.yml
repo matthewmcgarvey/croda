@@ -7,8 +7,3 @@ authors:
 crystal: 0.35.1
 
 license: MIT
-
-dependencies:
-  kilt:
-    github: jeromegn/kilt
-    version: ~> 0.6.1

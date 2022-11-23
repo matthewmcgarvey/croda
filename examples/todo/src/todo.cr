@@ -1,11 +1,11 @@
 require "croda"
 require "db"
+require "ecr"
 require "sqlite3"
 
 DATABASE = DB.open("sqlite3:./development.db")
 
 class App < Croda
-  plugin :render
   plugin :json
   plugin :cookies
   plugin :sessions
@@ -27,7 +27,7 @@ class App < Croda
     r.root do
       todos = DATABASE.query_all("SELECT * FROM todos", as: {id: Int32, task: String, completed_at: Time?})
       pp flash.now
-      render "src/templates/todos.ecr"
+      ECR.render "src/templates/todos.ecr"
     end
 
     r.post "todos" do
