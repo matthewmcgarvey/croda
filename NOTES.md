@@ -2,6 +2,24 @@
 
 General notes. Not documentation but might contain helpful things.
 
+## Dec 8, 2022
+
+I've been struggling with a better implementation of the named_routes plugin or a replacement.
+I don't like the way it's currently implemented with if-statements and calling `previous_def`.
+It feels very inneffecient. I've been looking at Roda's hash_branches plugin, but I don't see a way
+to implement that in Crystal. Mainly I want this so that I don't have to do `r.on(...)` first thing
+and the plugin matches based on the next path part.
+
+I've been thinking about why Roda doesn't use or even mention that you can create methods and call them
+even easier than using a plugin. Personally, I switched to it and away from using the named_routes plugin.
+The best I can come up with is that it's main benefit (beyond the implicit `r.on(...)`) is the indirection.
+With the routes plugins, the parent route block doesn't have to know anything about the child blocks that
+may or may not handle the request. By just using methods, I have to add the method, but I also have to
+update the parent block to call this new method.
+
+If I want the indirection _and_ the dynamic, but effecient routing, how do I do that?
+And do I want indirection? How does that help the codebase of my app, long term?
+
 ## March 31, 2022
 
 Wanting to switch to making a real product with this (CryHook).
