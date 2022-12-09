@@ -17,6 +17,9 @@ abstract class Croda
           {% CRODA_NAMED_ROUTE_PREVIOUS_DEF << nil %}
         end
 
+        def handle_named_route(name : String)
+        end
+
         def _execute_named_route
           yield request
         end
