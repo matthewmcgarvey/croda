@@ -2,6 +2,29 @@
 
 General notes. Not documentation but might contain helpful things.
 
+## Jan 02, 2023
+
+New year, still thinking about how to serialize and validate request data.
+
+Still like how Rust was doing it. Something like
+
+```crystal
+r.json(UserData)
+r.query_params(SearchFilters)
+r.form(CreateUser)
+````
+
+I don't want it to just return that type, though. If I did that,
+we'd either have to raise exceptions on invalid data, or the model would have to provide
+and API for it. I don't want to do those things, so I'd prefer `r.json(UserData)` return something
+like a `Croda::Json(UserData)` and that type be like Rust's `Result` object and have a type for
+each place request data can come from.
+
+## Dec 23, 2022
+
+I'm inspired by Actix's [extractors](https://actix.rs/docs/extractors).
+Not that they're method parameters, but just typesafe request data extraction.
+
 ## Dec 8, 2022
 
 I've been struggling with a better implementation of the named_routes plugin or a replacement.
