@@ -30,10 +30,13 @@ TODO: Write development instructions here
 
 - Identify core plugins still missing
   - Plugin for showing available routes <https://github.com/jeremyevans/roda-route_list>
+  - Assets
+  - Views (supports only Crinja for now)
+    - include a csrf function if possible
 - Rename the project
   - I don't want this forever to be the "crystal version of Roda"
   - It can't live up to that anyways at very fundamental levels
-  - Roda was originally named "Sinuba" which is simply a combination of Sinatra and Cuba (what Roda is forked from)
+  - Roda was originally named "Sinuba" which was a combination of Sinatra and Cuba (the library Roda is forked from)
   - The name Roda is based on the trees in a video game series called Ys
 - Write tests
 - Write docs
