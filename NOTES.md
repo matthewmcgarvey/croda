@@ -2,6 +2,14 @@
 
 General notes. Not documentation but might contain helpful things.
 
+## Dec 19, 2025
+
+I was very excited to come back to this, but the return has not been great.
+Crystal's LSP still sucks which means I have to dig through the library to figure out stuff.
+For example, I wanted to set a status on the response, but I couldn't remember if there was a method to set it
+If I needed to access the response instead then how do I do that?
+Also, being in a block for everything is just weird.
+
 ## Jan 02, 2023
 
 New year, still thinking about how to serialize and validate request data.
