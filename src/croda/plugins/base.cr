@@ -141,12 +141,12 @@ abstract class Croda
           @request.method
         end
 
-        def on : Nil
+        def on(&block) : Nil
           block_result(yield)
           halt
         end
 
-        def on(arg) : Nil
+        def on(arg, &block) : Nil
           path = @remaining_path
 
           if result = match(arg)
@@ -154,18 +154,17 @@ abstract class Croda
             halt
           else
             @remaining_path = path
-            false
           end
         end
 
-        def is : Nil
+        def is(&block) : Nil
           return unless empty_path?
 
           block_result(yield)
           halt
         end
 
-        def is(arg) : Nil
+        def is(arg, &block) : Nil
           path = @remaining_path
 
           if (result = match(arg)) && empty_path?
@@ -173,25 +172,24 @@ abstract class Croda
             halt
           else
             @remaining_path = path
-            false
           end
         end
 
-        def root : Nil
+        def root(&block) : Nil
           if remaining_path == "/" && method_matches?("GET")
             block_result(yield)
             halt
           end
         end
 
-        def get : Nil
+        def get(&block) : Nil
           return unless method_matches?("GET")
 
           block_result(yield)
           halt
         end
 
-        def get(arg) : Nil
+        def get(arg, &block) : Nil
           return unless method_matches?("GET")
 
           path = @remaining_path
@@ -201,18 +199,17 @@ abstract class Croda
             halt
           else
             @remaining_path = path
-            false
           end
         end
 
-        def post : Nil
+        def post(&block) : Nil
           return unless method_matches?("POST")
 
           block_result(yield)
           halt
         end
 
-        def post(arg) : Nil
+        def post(arg, &block) : Nil
           return unless method_matches?("POST")
 
           path = @remaining_path
@@ -222,7 +219,6 @@ abstract class Croda
             halt
           else
             @remaining_path = path
-            false
           end
         end
 
@@ -231,7 +227,7 @@ abstract class Croda
           halt
         end
 
-        def always : Nil
+        def always(&block) : Nil
           block_result(yield)
           halt
         end
@@ -316,19 +312,23 @@ abstract class Croda
 
         private def match(arg : Int32.class) : Tuple(Int32)?
           capture(/\A\/(\d+)(?=\/|\z)/) do |matchdata|
-            path_var = matchdata.captures.first.not_nil!
+            path_var = matchdata.captures.first
+            raise "unreachable" if path_var.nil?
+
             {path_var.to_i}
           end
         end
 
         private def match(arg : Int64.class) : Tuple(Int64)?
           capture(/\A\/(\d+)(?=\/|\z)/) do |matchdata|
-            path_var = matchdata.captures.first.not_nil!
+            path_var = matchdata.captures.first
+            raise "unreachable" if path_var.nil?
+
             {path_var.to_i64}
           end
         end
 
-        private def capture(arg)
+        private def capture(arg, &block)
           matchdata = @remaining_path.match(arg)
           return if matchdata.nil?
 
@@ -381,7 +381,7 @@ abstract class Croda
 
         def finish
           set_default_headers
-          stat = self.status
+          stat = status
 
           if body = @body
             @response.print(body)

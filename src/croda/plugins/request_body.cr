@@ -21,7 +21,9 @@ abstract class Croda
         @form : URI::Params?
 
         def form : URI::Params
-          @form ||= URI::Params.parse(body.not_nil!)
+          temp = body
+          raise "expected body not to be nil" if temp.nil?
+          @form ||= URI::Params.parse(temp)
         end
       end
     end

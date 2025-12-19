@@ -5,15 +5,13 @@ class ThrowError(T) < Exception
   end
 end
 
-def catch(value : T) forall T
-  begin
-    yield
-  rescue error : ThrowError(T)
-    if error.value == value
-      return
-    else
-      raise error
-    end
+def catch(value : T, &) forall T
+  yield
+rescue error : ThrowError(T)
+  if error.value == value
+    return
+  else
+    raise error
   end
 end
 

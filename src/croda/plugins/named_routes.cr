@@ -20,7 +20,7 @@ abstract class Croda
         def handle_named_route(name : String)
         end
 
-        def _execute_named_route
+        def _execute_named_route(&block)
           yield request
         end
       end

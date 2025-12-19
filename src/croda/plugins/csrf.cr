@@ -8,7 +8,7 @@ abstract class Croda
       module InstanceMethods
         CSRF_FIELD   = "_csrf"
         CSRF_HEADER  = "X-CSRF-Token"
-        CSRF_METHODS = %w(POST DELETE PATCH PUT)
+        CSRF_METHODS = %w[POST DELETE PATCH PUT]
 
         macro included
           require_plugin :csrf, :request_body
