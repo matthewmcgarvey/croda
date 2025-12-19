@@ -4,6 +4,6 @@ version: 0.1.0
 authors:
   - Matthew McGarvey <matthewmcgarvey14@gmail.com>
 
-crystal: 0.35.1
+crystal: 1.18.2
 
 license: MIT

@@ -60,7 +60,7 @@ abstract class Croda
             request_plugin({{ "#{type}::RequestMethods".id }}, {{ "#{type}::RequestClassMethods".id }})
             response_plugin({{ "#{type}::ResponseMethods".id }}, {{ "#{type}::ResponseClassMethods".id }})
             if (plug = {{ type }}).responds_to?(:configure)
-              plug.configure(self, {{ **named_args }})
+              plug.configure(self, {{ named_args.double_splat }})
             end
           {% end %}
         end
