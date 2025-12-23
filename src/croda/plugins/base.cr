@@ -141,6 +141,10 @@ abstract class Croda
           @request.method
         end
 
+        def path : String
+          @request.path
+        end
+
         def on(&block) : Nil
           block_result(yield)
           halt
@@ -364,8 +368,9 @@ abstract class Croda
 
       module ResponseMethods
         @body : String?
-        property status : Int32?
+        getter status : Int32?
         getter headers : HTTP::Headers
+        getter response : HTTP::Server::Response
 
         def initialize(@response : HTTP::Server::Response)
           @headers = @response.headers
@@ -377,6 +382,18 @@ abstract class Croda
 
         def redirect(path : String, @status : Int32) : Nil
           @response.headers["Location"] = path
+        end
+
+        def status=(status : Int32 | HTTP::Status)
+          @status = status.is_a?(HTTP::Status) ? status.code : status
+        end
+
+        def content_type=(val : String)
+          @response.headers["Content-Type"] = val
+        end
+
+        def content_length=(length : Int)
+          @response.content_length = length
         end
 
         def finish
