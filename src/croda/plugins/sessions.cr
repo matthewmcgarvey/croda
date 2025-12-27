@@ -12,6 +12,7 @@ abstract class Croda
       DEFAULT_ENCRYPTION_PREFIX = Base64.strict_encode("croda") + "--"
       DEFAULT_COOKIE_OPTIONS    = {path: "/", samesite: HTTP::Cookie::SameSite::Lax}
       CIPHER_ALGORITHM          = "aes-256-ctr"
+      DEFAULT_MAX_AGE           = 30.days
 
       protected class_getter secret_key : String do
         raise "Croda::CrodaPlugins::Sessions requires `secret_key`"
@@ -19,10 +20,14 @@ abstract class Croda
       protected class_getter session_key : String do
         raise "Croda::CrodaPlugins::Sessions requires `session_key`"
       end
+      protected class_getter max_age : Time::Span do
+        raise "Croda::CrodaPlugins::Sessions requires `max_age`"
+      end
 
-      def self.configure(_app : Croda.class, secret_key : String, session_key : String = DEFAULT_SESSION_KEY)
+      def self.configure(_app : Croda.class, secret_key : String, session_key : String = DEFAULT_SESSION_KEY, max_age : Time::Span = DEFAULT_MAX_AGE)
         @@secret_key = secret_key
         @@session_key = session_key
+        @@max_age = max_age
       end
 
       module InstanceMethods
@@ -54,11 +59,12 @@ abstract class Croda
         end
 
         def session_loaded? : Bool
-          !!@session
+          !@session.nil?
         end
 
         def persist_session(response)
-          response.set_cookie(Sessions.session_key, sessions_encrypt(session), **DEFAULT_COOKIE_OPTIONS)
+          attrs = DEFAULT_COOKIE_OPTIONS.merge(max_age: Sessions.max_age)
+          response.set_cookie(Sessions.session_key, sessions_encrypt(session), **attrs)
         end
 
         private def sessions_load : Hash(String, String)
