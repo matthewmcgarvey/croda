@@ -1,10 +1,19 @@
+# TODO: broken
+# $ crystal spec spec/croda/plugins/named_routes_spec.cr
+# Showing last frame. Use --error-trace for full trace.
+
+# In src/croda/plugins/named_routes.cr:30:18
+
+#  30 | @scope.handle_named_route(name)
+#              ^-----------------
+# Error: undefined method 'handle_named_route' for BaseSpec_RootApp (compile-time type is Croda+)
 abstract class Croda
   module CrodaPlugins
     module NamedRoutes
       module InstanceMethods
         CRODA_NAMED_ROUTE_PREVIOUS_DEF = [] of Nil
 
-        macro route(name, &block)
+        macro named_route(name, &block)
           def handle_named_route(name : String)
             if name == {{ name.id.stringify }}
               _execute_named_route {{ block }}
