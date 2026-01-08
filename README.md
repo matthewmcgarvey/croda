@@ -1,57 +1,43 @@
-# croda
+# Croda
 
-TODO: Write a description here
+This was a fun project, but I consider it dead now. I had no idea if it would even be possible to replicate Roda in Crystal when I first started this 5 years.
+I am beyond surprised at what I was able to achieve with empty classes and rather simple macros.
+I would still like to note some of the major features (from Roda but surprisingly implemented here).
 
-## Installation
+## Plugins
 
-1. Add the dependency to your `shard.yml`:
+If you look at most of the core classes (`Croda`, `CrodaRequest`, `CrodaResponse`), you'll find them to be practically empty.
+All of the functionality of the project comes from the plugins. The most important of which is the the `Base` plugin.
+That plugin essentially bootstraps itself and allows for all the other plugins to work. It adds all the basic functionality of a Croda and
+someone can handle web requests to some extent without adding any plugins themselves.
 
-   ```yaml
-   dependencies:
-     croda:
-       github: matthewmcgarvey/croda
-   ```
+Other plugins can be added that extend the functionality of those base objects and can define exactly how they extend it.
+They can also require configuration, and crazily (at least from a Crystal context) require other plugins as dependencies at compile time.
 
-2. Run `shards install`
+I've not seen any other Crystal project use this type of plugin system. This is definitely something I will keep in mind for future projects.
 
-## Usage
+## Tree-Based Routing
 
-```crystal
-require "croda"
-```
+Lots of Crystal web routing libraries use tree-based routing. This was the only one to allow dev's to implement their routing dynamically at runtime.
+It allowed for path variables, regex, and request method branching. While there are drawbacks (I'll get to it below),
+it was 100x simpler code to understand than any of the routers in your favorite crystal shard.
 
-TODO: Write usage instructions here
+## The whole request cycle in one block
 
-## Development
+Pretty much in every web framework, there's always the problem of wanting to do something with the request or response and wondering "Where do I put this?"
+In which of the many holes in that the framework gives you, are you supposed to slot in your auth, or your request tracing, or handle errors raised, or even routing?
+Having everything just right in the one block was like a canvas and everything I could want within arms reach.
 
-TODO: Write development instructions here
+## The Reason For Calling It Dead
 
-## TODO
+The mess. Yes, the block is great, but the block is HUGE.
+Roda, of course, has this same problem. They get around it by having some plugins that let you define a route block outside the class and link to it from the main route block.
+Unfortunately I wasn't able to implement this in Crystal (see the broken NamedRoutes plugin).
+If I were able to define a separate routing block, I would also have to find a way to be able to move it out of the main croda file.
+Maybe someone else could pick up the torch from here and figure it out.
 
-- Identify core plugins still missing
-  - Plugin for showing available routes <https://github.com/jeremyevans/roda-route_list>
-  - Assets
-  - Views (supports only Crinja for now)
-    - include a csrf function if possible
-- Rename the project
-  - I don't want this forever to be the "crystal version of Roda"
-  - It can't live up to that anyways at very fundamental levels
-  - Roda was originally named "Sinuba" which was a combination of Sinatra and Cuba (the library Roda is forked from)
-  - The name Roda is based on the trees in a video game series called Ys
-- Write tests
-- Write docs
-- Compare performance between this and other common web frameworks
-  - not to brag, but at a very base level, identify if performance is a tradeoff
-  - I'm not sure I expect performance to be very different one way or the other
+Another reason is the lack of a good LSP in crystal.
+It makes having few objects with many methods difficult to work with. I found myself constantly digging through plugin code searching for things.
+It also proved difficult for AI's. as they had to do more work to figure out how the project works and look in plugins for things.
 
-## Contributing
-
-1. Fork it (<https://github.com/matthewmcgarvey/croda/fork>)
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create a new Pull Request
-
-## Contributors
-
-- [your-name-here](https://github.com/matthewmcgarvey) - creator and maintainer
+Overall, there were many hurdles, which were interesting, but the small cuts along the way eventually got to me.
